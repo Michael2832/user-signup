@@ -3,90 +3,129 @@ import cgi
 import os
 
 app = Flask(__name__)
-app.config['DEBUG'] = True 
+app.config['DEBUG'] = True
 
-@app.route("/submit")
-def index():
-    return render_template("form.html")
+@app.route('/')
+def display_user_signup_form():
+    return render_template('form.html')
 
-def empty_blank(a):
-    if a:
-        return True
-    else:
-        return False
-
-def character_len(a):
-    if len(a) > 2 and len(a) <21:
-        return True
-    else :
-        return False
-
-def email_format_21(a):
-    if a.count("@") >=1:
-        return True
-    else:
-        return False
-
-def email_format_22(a):
-    if a.count("@") <=1:
-        return True
-    else :
-        return False
-
-def email_format_dot(a):
-        if a.count(".") >=1:
-        return True
-    else:
-        return False
-
-def email_format_dot2(a):
-    if a.count(".") <=1:
-        return True
-    else :
-        return False
-
-
-@app.route("/submit", methods=['POST'])
-def fill_in():
-
+@app.route("/", methods=['POST'])
+def user_signup_complete():
+    
+    #Getting Form Info
     username = request.form['username']
     password = request.form['password']
-    verify = request.form["verify"]
-    email = request.form["email"]
+    verify = request.form['verify']
+    email = request.form['email']
+    switch = True
 
-    username_blank = ""
-    password_blank = ""
-    verify_blank = ""
-    email_blank = ""
+    username_error = ""
+    password_error = "" 
+    verify_error = ""
+    email_error = ""
 
-    error_needed = "This Field Is Required"
-    error_count = "There Must Be Between 3 and 20 Characters"
-    error_spaces = "There Must Be No Spaces"
-    error_password = "Please Re Enter Your Password"
+    def required(name):
+        if name == "" :
+            error = "This is a required field, please fill it out!"
+        else:
+            error = ""
+        return error
 
-    if not empty_blank(password):
-        password_blank = error_needed
-        password = ""
-        verify = ""
-    elif not character_len(password):
-        password_blank = "Password" + error_count
-        password = ""
-        verify = ""
-        verify_blank = error_password
+    def lenth(name):
+        if len(name) < 3 or len(name) > 21 :
+            error = "You must have at least 3 characters but no more than 20"
+        else:
+            error = ""
+        return error
+
+    def space(name):
+        if " " in name :
+            error = "This feild can not contain spaces!"
+        else:
+            error = ""
+        return error
+
+    def atine(name):
+        if name.count("@") < 1:
+            error = "You need an @ at sign in your e-mail!"
+        else:
+            error = ""
+        return error
+
+    def ats(name):
+        if name.count("@") > 1:
+            error = "You can only have one @ at sign in your e-mail!"
+        else:
+            error = ""
+        return error
+
+    def dot(name):
+        if name.count(".") < 1:
+            error = "You need a . dot in your e-mail!"
+        else:
+            error = ""
+        return error
+
+    def dots(name):
+        if name.count(".") > 1:
+            error = "You can only have one . dot in your e-mail!"
+        else:
+            error = ""
+        return error
+
+    #UserName
+    if username_error == "" :
+        username_error = required(username)
+    if username_error == "" :
+        username_error = lenth(username)
+    if username_error == "" :
+        username_error = space(username)
+    if username_error != "" :
+        switch = False
+
+    #Password
+    if password_error == "" :
+        password_error = required(password)
+        verify_error = required(password)
+    if password_error == "" :
+        password_error = lenth(password)
+        verify_error = lenth(password)
+    if password_error == "" :
+        password_error = space(password)
+        verify_error = space(password)
+    if password != verify :
+        password_error = "Password and Verifacation do not match!"
+        verify_error = "Password and Verifacation do not match!"
+    if password_error != "" :
+        switch = False
+
+    #Email
+    if email != "" :
+        if email_error == "":
+            email_error = atine(email)
+        if email_error == "":
+            email_error = ats(email)
+        if email_error == "":
+            email_error = dot(email)
+        if email_error == "":
+            email_error = dots(email)
+        if email_error == "":
+            email_error = lenth(email)
+        if email_error == "":
+            email_error = space(email)
+        if email_error != "":
+            switch = False
+
+    if switch == True:
+        username = username
+        return redirect('/welcome?username={}'.format(username))
+
     else:
-        if " " in password :
-            password_blank = "Password " + error_spaces
-            password = ""
-            verify = ""
-            verify_blank = error_password
+        return render_template('form.html', username_error=username_error, username=username, password_error=password_error, password=password, verify_error=verify_error, verify=verify, email_error=email_error, email=email)
 
-    if password_blank != verify_blank:
-        verify_
-
-
-@app.route("/welcome")
-def welcome():
-    username = request.args.get("username")
-    return render_template("welcome.html" , username = "username")
+@app.route('/welcome')
+def valid_signup():
+    username = request.args.get('username')
+    return render_template('welcome.html', username=username)
 
 app.run()
