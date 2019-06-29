@@ -76,10 +76,16 @@ def user_signup_complete():
     #UserName
     if username_error == "" :
         username_error = required(username)
+        password = ""
+        verify = ""
     if username_error == "" :
         username_error = lenth(username)
+        password = ""
+        verify = ""
     if username_error == "" :
         username_error = space(username)
+        password = ""
+        verify = ""
     if username_error != "" :
         switch = False
 
@@ -87,39 +93,59 @@ def user_signup_complete():
     if password_error == "" :
         password_error = required(password)
         verify_error = required(password)
+        password = ""
+        verify = ""
     if password_error == "" :
         password_error = lenth(password)
         verify_error = lenth(password)
+        password = ""
+        verify = ""
     if password_error == "" :
         password_error = space(password)
         verify_error = space(password)
+        password = ""
+        verify = ""
     if password != verify :
         password_error = "Password and Verifacation do not match!"
         verify_error = "Password and Verifacation do not match!"
+        password = ""
+        verify = ""
     if password_error != "" :
         switch = False
 
     #Email
     if email != "" :
         if email_error == "":
-            email_error = atine(email)
-        if email_error == "":
-            email_error = ats(email)
-        if email_error == "":
-            email_error = dot(email)
-        if email_error == "":
-            email_error = dots(email)
+            email_error = space(email)
+            password = ""
+            verify = ""
         if email_error == "":
             email_error = lenth(email)
+            password = ""
+            verify = ""
         if email_error == "":
-            email_error = space(email)
+            email_error = atine(email)
+            password = ""
+            verify = ""
+        if email_error == "":
+            email_error = ats(email)
+            password = ""
+            verify = ""
+        if email_error == "":
+            email_error = dot(email)
+            password = ""
+            verify = ""
+        if email_error == "":
+            email_error = dots(email)
+            password = ""
+            verify = ""
+
         if email_error != "":
             switch = False
 
     if switch == True:
         username = username
         return redirect('/welcome?username={}'.format(username))
-
     else:
         return render_template('form.html', username_error=username_error, username=username, password_error=password_error, password=password, verify_error=verify_error, verify=verify, email_error=email_error, email=email)
 
